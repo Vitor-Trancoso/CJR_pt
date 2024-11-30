@@ -3,7 +3,7 @@ export default function Profile() {
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
       {/* Header */}
       <header className="w-full bg-gray-800 px-8 py-4 flex justify-between items-center shadow-md">
-        <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-12 h-12" />
+        <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-35 h-12" />
         <div className="flex items-center gap-4">
           <button className="text-white">
             <i className="fas fa-bell text-xl"></i>
