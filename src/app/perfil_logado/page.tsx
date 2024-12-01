@@ -9,7 +9,7 @@ export default function Profile() {
             <i className="fas fa-bell text-xl"></i>
           </button>
           <img
-            src="/images/morty-avatar.jpg"
+            src="/images/morty-avatar.png"
             alt="Avatar"
             className="w-10 h-10 rounded-full border-2 border-white"
           />
@@ -22,7 +22,7 @@ export default function Profile() {
         <div className="bg-gray-900 rounded-xl p-6 shadow-lg w-11/12 max-w-4xl">
           <div className="flex flex-col items-center">
             <img
-              src="/images/morty-avatar.jpg"
+              src="/images/morty-avatar.png"
               alt="Avatar do Usuário"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow-md"
             />
@@ -54,7 +54,7 @@ export default function Profile() {
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
               <div className="flex items-center gap-4">
                 <img
-                  src="/images/morty-avatar.jpg"
+                  src="/images/morty-avatar.png"
                   alt="Avatar"
                   className="w-12 h-12 rounded-full"
                 />
@@ -86,7 +86,7 @@ export default function Profile() {
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
               <div className="flex items-center gap-4">
                 <img
-                  src="/images/morty-avatar.jpg"
+                  src="/images/morty-avatar.png"
                   alt="Avatar"
                   className="w-12 h-12 rounded-full"
                 />
