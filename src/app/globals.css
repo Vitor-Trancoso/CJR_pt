@@ -29,7 +29,32 @@ code {
 }
 
 .animate-gradient {
-  background: linear-gradient(270deg, #004aad, #cb6ce6, #6a11cb, #2575fc);
+  background: linear-gradient(
+    270deg,
+    #024398,
+    #004aad,
+    #9442ab,
+    #ac3eca,
+    #9442ab,
+    #6a11cb,
+    #024398,
+    #2575fc
+  );
   background-size: 400% 400%;
-  animation: gradient 10.5s ease infinite;
+  animation: gradient 60s ease infinite;
+}
+
+.bg-gradient-custom {
+  background: linear-gradient(
+    135deg,
+    #024398,
+    #004aad,
+    #9442ab,
+    #ac3eca,
+    #9442ab,
+    #6a11cb,
+    #024398,
+    #2575fc
+  );
+  background-size: 200% 200%; /* Para transições suaves */
 }
