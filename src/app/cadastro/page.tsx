@@ -5,25 +5,7 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [user, setUser] = useState<any>([]);
   const Router = useRouter();
-  const [users, setUsers] = useState<any>([]);
 
-
-  useEffect(() => {
-      console.log('Initial comments state: ', users);
-      obterUsers()
-  }, [])
-
-  async function obterUsers() {
-    try {
-        const resp = await fetch('http://localhost:3001/user');
-        const users = await resp.json();
-        console.log(users); 
-        setUsers(users);
-    } catch (error) {
-        console.error("Error fetching users: ", error);
-        setUsers([]); 
-    }
-  }
 
   async function criarUser(){
     try {
@@ -38,8 +20,8 @@ export default function Home() {
       if(resp.ok) {
         setUser({})
         const users = await resp.json()
-        setUsers(users)
-        Router.push('/')
+        setUser(users)
+        window.location.href = '/';
         alert ("usuário criado")
       }
       else{
