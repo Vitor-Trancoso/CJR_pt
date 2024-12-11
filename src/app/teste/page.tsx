@@ -13,7 +13,7 @@ export default function Home(){
 
     async function obterComments() {
         try {
-            const resp = await fetch('http://localhost:3001/comments');
+            const resp = await fetch('http://localhost:3002/comments');
             const comments = await resp.json();
             console.log(comments); 
             setComments(comments);

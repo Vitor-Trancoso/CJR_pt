@@ -14,7 +14,7 @@ export default function Home() {
 
   async function checkUserfunc(){
     try{
-      const resp = await fetch('http://localhost:3001/login', {
+      const resp = await fetch('http://localhost:3002/login', {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/json'

@@ -23,30 +23,37 @@ export default function Profile() {
 
   async function obterUser() {
     try {
-      const resp = await fetch("http://localhost:3001/me", {
+      const storedToken = localStorage.getItem("token"); 
+      if (!storedToken) {
+        console.error("Token não encontrado");
+        getUser([]);
+        return;
+      }
+  
+      const resp = await fetch("http://localhost:3002/me", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${storedToken}`, 
           "Content-Type": "application/json",
         },
       });
   
       if (resp.ok) {
-        const text = await resp.text(); 
+        const text = await resp.text();
         if (text) {
           const data = JSON.parse(text);
           getUser(data);
         } else {
-          console.error("Empty response body");
+          console.error("Resposta vazia");
           getUser([]);
         }
       } else {
-        console.error(`Error: ${resp.status} - ${resp.statusText}`);
-        getUser([]); 
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+        getUser([]);
       }
     } catch (error) {
-      console.error("Error fetching user: ", error);
-      getUser([]); 
+      console.error("Erro ao buscar usuário: ", error);
+      getUser([]);
     }
   }
 
@@ -78,7 +85,7 @@ export default function Profile() {
               alt="Avatar do Usuário"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow-md"
             />
-            <h1 className="text-white text-3xl font-bold mt-4">{user.email}</h1>
+            <h1 className="text-white text-3xl font-bold mt-4">{user.name}</h1>
             <p className="text-gray-400 text-sm mt-2">
               Ciência da Computação / Dept. Ciência da Computação
             </p>
