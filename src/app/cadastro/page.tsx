@@ -1,15 +1,16 @@
 'use client'
-import Router, { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [user, setUser] = useState<any>([]);
-  const Router = useRouter();
+  const [user, setUser] = useState<any>({});
+  const router = useRouter();
 
 
   async function criarUser(){
+    
     try {
-      const resp = await fetch('http://localhost:3001/user', {
+      const resp = await fetch('http://localhost:3002/user', {
           method: 'POST', 
           headers: {
               'Content-Type' : 'application/json'
@@ -18,14 +19,15 @@ export default function Home() {
       })
     
       if(resp.ok) {
-        setUser({})
-        const users = await resp.json()
-        setUser(users)
-        window.location.href = '/';
-        alert ("usuário criado")
+        const users = await resp.json();
+        setUser({});
+        alert('Usuário criado');
+        router.push('/');
       }
       else{
-        console.error('Erro ao criar usuário');
+        const errorMessage = await resp.text();
+        console.error('Erro ao criar usuário:', errorMessage);
+        alert(`Erro ao criar usuário: ${errorMessage}`);
       }
     }
     catch (error){
@@ -99,7 +101,7 @@ export default function Home() {
             />
           </div>
           <div className="flex justify-center">
-            <button onClick={criarUser} className="w-full py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            <button type= "button" onClick={criarUser} className="w-full py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
               Criar Conta
             </button>
           </div>

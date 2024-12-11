@@ -74,11 +74,24 @@ export default function Home(){
         )
     }
 
-
+    function renderizarComments(){
+        return (
+            <div>
+                {Array.isArray(comments) && comments.map((comments: any)=> (
+                    <div key ={comments.id} >
+                        <p>{comments.userID}</p>
+                        <p>{comments.avalID}</p> 
+                        <p>{comments.conteudo}</p>     
+                    </div>
+                ))}
+            </div>
+        )
+    }
 
     return(
         <div>
             {renderizarFormComments()}
+            {renderizarComments()}
         </div>
     )
 }

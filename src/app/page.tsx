@@ -22,9 +22,17 @@ export default function Home() {
         body: JSON.stringify(user)
       })
 
-      if(resp.ok) {
-        Router.push('/perfil_logado')
-        alert ("Login realizado com sucesso")
+      if (resp.ok) {
+        const data = await resp.json(); 
+        console.log('Resposta da API:', data); 
+        const token = data.access_token; 
+        if (token) {
+          localStorage.setItem('token', token); 
+          Router.push('/perfil_logado'); 
+          alert('Login realizado com sucesso');
+        } else {
+          console.error('Token não encontrado na resposta');
+        }
       }
 
       else{

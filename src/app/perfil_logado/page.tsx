@@ -1,4 +1,56 @@
+'use client'
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 export default function Profile() {
+
+  const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
+  const [user, getUser] = useState<any>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        setToken(storedToken); 
+        obterUser(); 
+      } else {
+        
+        router.push('/login');
+    }
+    obterUser()}
+    }, [router]);
+
+  async function obterUser() {
+    try {
+      const resp = await fetch("http://localhost:3001/me", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (resp.ok) {
+        const text = await resp.text(); 
+        if (text) {
+          const data = JSON.parse(text);
+          getUser(data);
+        } else {
+          console.error("Empty response body");
+          getUser([]);
+        }
+      } else {
+        console.error(`Error: ${resp.status} - ${resp.statusText}`);
+        getUser([]); 
+      }
+    } catch (error) {
+      console.error("Error fetching user: ", error);
+      getUser([]); 
+    }
+  }
+
+
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
       {/* Header */}
@@ -26,7 +78,7 @@ export default function Profile() {
               alt="Avatar do Usuário"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow-md"
             />
-            <h1 className="text-white text-3xl font-bold mt-4">Morty Gamer</h1>
+            <h1 className="text-white text-3xl font-bold mt-4">{user.email}</h1>
             <p className="text-gray-400 text-sm mt-2">
               Ciência da Computação / Dept. Ciência da Computação
             </p>
