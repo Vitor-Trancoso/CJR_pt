@@ -8,6 +8,7 @@ export default function Profile() {
   const router = useRouter();
   const [user, getUser] = useState<any>([]);
   const [FullUser, getFullUser] = useState<any>([])
+  const [post, getPosts] = useState<any[]>([])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -17,7 +18,7 @@ export default function Profile() {
         obterUser(); 
       } else {
         
-        router.push('/login');
+        router.push('/');
     }
     obterUser()}
     }, [router]);
@@ -26,6 +27,11 @@ export default function Profile() {
       obterFullUser();
       }
     }, [user.id]);
+    useEffect(() => {
+      if (user.id) {
+        findPosts();
+        }
+      }, [user.id]);
 
 
   async function obterUser() {
@@ -128,6 +134,38 @@ export default function Profile() {
     }
   }
 
+  async function findPosts() {
+    try{
+      const storedToken = localStorage.getItem("token"); 
+      if (!storedToken) {
+        console.error("Token não encontrado");
+        getUser([]);
+        return;
+      }
+      const resp = await fetch(`http://localhost:3002/user/posts/${user.id}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${storedToken}`, 
+          "Content-Type": "application/json",
+        },
+      });
+      if (resp.ok) {
+          const text = await resp.text();
+          const data = JSON.parse(text);
+          console.log("Dados da API:", data);
+          getPosts(data.avaliacoes || []);
+        }
+      else {
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+        getPosts([]);
+      }
+    }
+    catch (error) {
+      console.error("Erro ao buscar posts: ", error);
+      getPosts([]);
+    }
+  }
+
 
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -180,69 +218,65 @@ export default function Profile() {
 
           {/* Lista de Publicações */}
           <div className="flex flex-col gap-6">
-            {/* Publicação 1 */}
-            <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-              <div className="flex items-center gap-4">
-                <img
-                  src="/images/morty-avatar.png"
-                  alt="Avatar"
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <p className="text-white font-bold">Morty Gamer</p>
-                  <p className="text-gray-400 text-sm">
-                    17/04/2024, às 21:42 - João Frango - Surf
-                  </p>
-                </div>
+            {post.length > 0 ? (
+              <ul>
+                {post.map((post) => (
+                  <li key={post.id} className="mb-4">
+                    <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src="/images/morty-avatar.png" 
+                          alt="Avatar"
+                          className="w-12 h-12 rounded-full"
+                        />
+                        <div>
+                          <p className="text-white font-bold">{post.name || "Usuário"}</p>
+                          <p className="text-gray-400 text-sm">
+                            {new Date(post.createdt).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                            , às{" "}
+                            {new Date(post.createdt).toLocaleTimeString("pt-BR", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                            - {FullUser.curso} -{" "}
+                            {FullUser.departamento}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-gray-300 mt-4">{post.conteudo}</p>
+                      <div className="flex justify-between items-center mt-4">
+                        <p className="text-gray-400 text-sm">
+                          {post.comentarios
+                            ? `${post.comentarios.length} comentário${
+                                post.comentarios.length > 1 ? "s" : ""
+                              }`
+                            : "Sem comentários"}
+                        </p>
+                        <div className="flex gap-2">
+                          <button className="text-green-500 hover:text-green-600">
+                            <i className="fas fa-edit"></i>
+                          </button>
+                          <button className="text-red-500 hover:text-red-600">
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-6">
+                <p className="text-gray-300 text-center">
+                  Você ainda não tem publicações.
+                </p>
               </div>
-              <p className="text-gray-300 mt-4">
-                Contrary to popular belief, Lorem Ipsum is not simply random
-                text. It has roots in a piece of classical Latin literature.
-              </p>
-              <div className="flex justify-between items-center mt-4">
-                <p className="text-gray-400 text-sm">2 comentários</p>
-                <div className="flex gap-2">
-                  <button className="text-green-500 hover:text-green-600">
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button className="text-red-500 hover:text-red-600">
-                    <i className="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
+            )}
 
-            {/* Publicação 2 */}
-            <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-              <div className="flex items-center gap-4">
-                <img
-                  src="/images/morty-avatar.png"
-                  alt="Avatar"
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <p className="text-white font-bold">Morty Gamer</p>
-                  <p className="text-gray-400 text-sm">
-                    15/04/2024, às 21:42 - Rick - Viagem Interdimensional
-                  </p>
-                </div>
-              </div>
-              <p className="text-gray-300 mt-4">
-                Contrary to popular belief, Lorem Ipsum is not simply random
-                text. It has roots in a piece of classical Latin literature.
-              </p>
-              <div className="flex justify-between items-center mt-4">
-                <p className="text-gray-400 text-sm">5 comentários</p>
-                <div className="flex gap-2">
-                  <button className="text-green-500 hover:text-green-600">
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button className="text-red-500 hover:text-red-600">
-                    <i className="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
