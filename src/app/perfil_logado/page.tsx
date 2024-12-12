@@ -1,3 +1,5 @@
+import EditarPerfilModal from "../../components/EditPerfilModal"; // Importação do Modal
+
 export default function Profile() {
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -35,9 +37,8 @@ export default function Profile() {
 
           {/* Botões de Ação */}
           <div className="flex justify-center mt-6 gap-4">
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600">
-              Editar Perfil
-            </button>
+            {/* Modal de Editar Perfil */}
+            <EditarPerfilModal />
             <button className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-600">
               Excluir Perfil
             </button>
