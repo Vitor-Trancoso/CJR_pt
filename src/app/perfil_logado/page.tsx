@@ -7,6 +7,7 @@ export default function Profile() {
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
   const [user, getUser] = useState<any>([]);
+  const [FullUser, getFullUser] = useState<any>([])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -20,6 +21,11 @@ export default function Profile() {
     }
     obterUser()}
     }, [router]);
+  useEffect(() => {
+    if (user.id) {
+      obterFullUser();
+      }
+    }, [user.id]);
 
 
   async function obterUser() {
@@ -86,6 +92,42 @@ export default function Profile() {
     } 
   }
 
+  async function obterFullUser() {
+    try {
+      const storedToken = localStorage.getItem("token"); 
+      if (!storedToken) {
+        console.error("Token não encontrado");
+        getUser([]);
+        return;
+      }
+  
+      const resp = await fetch(`http://localhost:3002/user/id/${user.id}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${storedToken}`, 
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (resp.ok) {
+        const text = await resp.text();
+        if (text) {
+          const data = JSON.parse(text);
+          getFullUser(data);
+        } else {
+          console.error("Resposta vazia");
+          getFullUser([]);
+        }
+      } else {
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+        getFullUser([]);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar usuário: ", error);
+      getFullUser([]);
+    }
+  }
+
 
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -116,9 +158,9 @@ export default function Profile() {
             />
             <h1 className="text-white text-3xl font-bold mt-4">{user.name}</h1>
             <p className="text-gray-400 text-sm mt-2">
-              Ciência da Computação / Dept. Ciência da Computação
+              {FullUser.curso} / {FullUser.departamento}
             </p>
-            <p className="text-gray-400 text-sm">Morty.gamer.23@cjr.org.br</p>
+            <p className="text-gray-400 text-sm">{user.email}</p>
           </div>
 
           {/* Botões de Ação */}
