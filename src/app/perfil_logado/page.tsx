@@ -21,6 +21,7 @@ export default function Profile() {
     obterUser()}
     }, [router]);
 
+
   async function obterUser() {
     try {
       const storedToken = localStorage.getItem("token"); 
@@ -55,6 +56,34 @@ export default function Profile() {
       console.error("Erro ao buscar usuário: ", error);
       getUser([]);
     }
+  }
+  async function deleteUser(){
+    const storedToken = localStorage.getItem("token"); 
+    try{
+      if (!user.id) { 
+        console.error('User ID is not set'); 
+        return; 
+      }
+      const resp = await fetch(`http://localhost:3002/user/${user.id}`, {
+          method: 'DELETE',
+          headers: {
+            "Authorization": `Bearer ${storedToken}`, 
+            "Content-Type": "application/json",
+          },
+      })
+      if (resp.ok){
+        alert('usuário deletado')
+        router.push("/")
+      }
+      else{
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+        const errorMessage = await resp.text();
+        console.error("Erro ao deletar usuário", errorMessage)
+      }
+    }
+    catch (error){
+      console.error('Erro ao criar usuário', error)
+    } 
   }
 
 
@@ -97,7 +126,7 @@ export default function Profile() {
             <button className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600">
               Editar Perfil
             </button>
-            <button className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-600">
+            <button type= "button" onClick={deleteUser} className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-600">
               Excluir Perfil
             </button>
           </div>
