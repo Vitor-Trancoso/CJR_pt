@@ -7,6 +7,8 @@ export default function Home(){
     const [user, getUser] = useState<any>([]);
     const [token, setToken] = useState<string | null>(null);
     const router = useRouter();
+    const [userDetails, setUserDetails] = useState<Record<number, any>>({});
+
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -18,8 +20,24 @@ export default function Home(){
             
             router.push('/');
         }
+        const avalId = localStorage.getItem("avalID");
+            if (!avalId) {
+                console.error("AvalId não encontrado");
+                getAval([]);
+                return;
+              }
         getAvalia()}
         }, [router]);
+
+    useEffect(() => {
+        if (aval.comentarios && aval.comentarios.length > 0) {
+        aval.comentarios.forEach((comentario: any) => {
+            if (!userDetails[comentario.userID]) {
+            obterUserporID(comentario.userID);
+            }
+        });
+        }
+    }, [aval]);
 
     useEffect(() => {
         if (aval.usuarioID) {
@@ -54,6 +72,7 @@ export default function Home(){
               const text = await resp.text();
               if (text) {
                 const data = JSON.parse(text);
+                console.log("Dados getavalia:", data);
                 getAval(data);
               } else {
                 console.error("Resposta vazia");
@@ -90,7 +109,7 @@ export default function Home(){
                 const text = await resp.text();
                 if (text) {
                   const data = JSON.parse(text);
-                  getUser(data);
+                  setUserDetails((prevDetails) => ({ ...prevDetails, [userID]: data }));
                 } else {
                   console.error("Resposta vazia");
                   getUser([]);
@@ -104,6 +123,7 @@ export default function Home(){
               getUser([]);
             }
           }
+
 
     return(
         <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -130,7 +150,7 @@ export default function Home(){
                 className="w-12 h-12 rounded-full"
                 />
                 <div>
-                    <p className="text-white font-bold"> {user.name} </p>
+                    <p className="text-white font-bold"> {userDetails[aval.usuarioID]?.name} </p>
                     <div>
                         <p className="text-gray-400 text-sm">
                             {new Date(aval.createdt).toLocaleDateString("pt-BR", {
@@ -143,7 +163,7 @@ export default function Home(){
                                 hour: "2-digit",
                                 minute: "2-digit",
                             })}
-                            - {user.curso} - {user.departamento}
+                            - {userDetails[aval.usuarioID]?.curso} - {userDetails[aval.usuarioID]?.departamento}
                         </p>
                     </div>                              
                 </div>
@@ -165,8 +185,8 @@ export default function Home(){
             <div className="bg-gray-900 rounded-xl p-6 shadow-lg w-11/12 max-w-4xl mt-6">
             <h2 className="text-white text-2xl font-bold mb-4">Comentários</h2>
 
-          {aval.comments && aval.comments.length > 0 ? (
-            aval.comments.map((comment: any, index: number) => (
+          {aval.comentarios && aval.comentarios.length > 0 ? (
+            aval.comentarios.map((comentario: any, index: number) => (
               <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-md mb-4">
                 <div className="flex items-center gap-4">
                   <img
@@ -175,20 +195,20 @@ export default function Home(){
                     className="w-10 h-10 rounded-full"
                   />
                   <div>
-                    <p className="text-white font-bold">{comment.userName}</p>
+                    <p className="text-white font-bold">{userDetails[comentario.userID]?.name}</p>
                     <p className="text-gray-400 text-sm">
-                      {new Date(comment.createdAt).toLocaleDateString("pt-BR", {
+                      {new Date(comentario.createdt).toLocaleDateString("pt-BR", {
                         day: "2-digit",
                         month: "2-digit",
                         year: "numeric",
-                      })} - {new Date(comment.createdAt).toLocaleTimeString("pt-BR", {
+                      })} - {new Date(comentario.createdt).toLocaleTimeString("pt-BR", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
                     </p>
                   </div>
                 </div>
-                <p className="text-gray-300 mt-4">{comment.content}</p>
+                <p className="text-gray-300 mt-4">{comentario.conteudo}</p>
               </div>
             ))
           ) : (
