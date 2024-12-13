@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
 export default function EditarPerfilModal() {
   // Estado para controlar a visibilidade do modal
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +48,7 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
   const [user, getUser] = useState<any>([]);
   const [settedUser, setUser] = useState<any>([])
   const [FullUser, getFullUser] = useState<any>([])
+  const [senhatemp, setsenhatemp] = useState<any>([])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -150,7 +152,8 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
       
           const userWithId = {
             ...settedUser,
-            id: user.id, 
+            id: user.id,
+            senha: senhatemp,
           };
       
           console.log("Payload being sent to the API:", userWithId);
@@ -281,8 +284,8 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
                 <input
                   type={showPassword.newPassword ? "text" : "password"}
                   placeholder="Nova senha"
-                  value = {settedUser.senha ?? ''}
-                  onChange={(e) => setUser({...settedUser, senha: e.target.value})}
+                  value = {senhatemp ?? ''}
+                  onChange={(e) => setsenhatemp(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 placeholder-gray-400 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
