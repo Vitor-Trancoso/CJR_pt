@@ -13,7 +13,6 @@ export default function EditarPerfilModal() {
     confirmPassword: false,
   });
   // Abre o modal
-  const handleOpen = () => setIsOpen(true);
   // Fecha o modal
   const handleClose = () => setIsOpen(false);
   // Alterna a visibilidade de um campo de senha
@@ -141,47 +140,46 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
         }
       }
 
-  async function updateUser() {
-    try {
-      const storedToken = localStorage.getItem("token");
-      if (!storedToken) {
-        console.error("Token não encontrado");
-        setUser([]);
-        return;
+      async function updateUser() {
+        try {
+          const storedToken = localStorage.getItem("token");
+          if (!storedToken) {
+            console.error("Token não encontrado");
+            return;
+          }
+      
+          const userWithId = {
+            ...settedUser,
+            id: user.id, 
+          };
+      
+          console.log("Payload being sent to the API:", userWithId);
+      
+          const resp = await fetch(`http://localhost:3002/user/${user.id}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userWithId),
+          });
+      
+          if (resp.status == 204 || resp.status == 200) {
+            alert("Usuário alterado com sucesso!");
+            router.push("/");
+          } else {
+            console.error(`Erro ao atualizar usuário: ${resp.status} - ${resp.statusText}`);
+          }
+        } catch (error) {
+          console.error("Erro ao atualizar usuário:", error);
+        }
       }
       
-      const userWithId = {
-        ...settedUser, 
-        id: user.id,   
+      const handleOpen = () => {
+        setIsOpen(true);
       };
 
-      const resp = await fetch(`http://localhost:3002/user/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${storedToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userWithId),
-      });
-  
-      if (resp.ok) {
-        const updateUser = await resp.json(); 
-        const updatedUser = JSON.parse(updateUser);
-        setUser(updatedUser);
-        alert("Usuário alterado");
-        router.push('/');
-      } else {
-        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
-        setUser([]);
-      }
-    } catch (error) {
-        router.push('/');
-      setUser([]);
-    }
-  }
-  function refresh(){
-    router.push('/');
-  }
+    
 
   return (
     <div>
@@ -283,7 +281,7 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
                 <input
                   type={showPassword.newPassword ? "text" : "password"}
                   placeholder="Nova senha"
-                  value = {''}
+                  value = {settedUser.senha ?? ''}
                   onChange={(e) => setUser({...settedUser, senha: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 placeholder-gray-400 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -299,7 +297,7 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
               <div className="flex justify-center mt-4">
                 <button
                   type="button"
-                  onClick={() => {refresh; updateUser}}
+                  onClick={updateUser}
                   className="px-5 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
                 >
                   Salvar
