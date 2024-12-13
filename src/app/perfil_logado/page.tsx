@@ -35,7 +35,7 @@ export default function Profile() {
       }, [user.id]);
     
       function comentarios(id: number) {  
-        localStorage.setItem('postId', id.toString());  
+        localStorage.setItem('avalID', id.toString());  
         router.push("/comentarios");
     }
 

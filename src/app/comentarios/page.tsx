@@ -1,7 +1,109 @@
 'use client'
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 
 export default function Home(){
+    const [aval, getAval] = useState<any>([]);
+    const [user, getUser] = useState<any>([]);
+    const [token, setToken] = useState<string | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+          const storedToken = localStorage.getItem("token");
+          if (storedToken) {
+            setToken(storedToken); 
+            getAvalia(); 
+          } else {
+            
+            router.push('/');
+        }
+        getAvalia()}
+        }, [router]);
+
+    useEffect(() => {
+        if (aval.usuarioID) {
+          obterUserporID(aval.usuarioID); 
+        }
+      }, [aval.usuarioID]);
+
+    async function getAvalia(){
+        try {
+            const storedToken = localStorage.getItem("token"); 
+            if (!storedToken) {
+              console.error("Token não encontrado");
+              getAval([]);
+              return;
+            }
+            const avalId = localStorage.getItem("avalID");
+            if (!avalId) {
+                console.error("AvalId não encontrado");
+                getAval([]);
+                return;
+              }
+        
+            const resp = await fetch(`http://localhost:3002/avaliacao/comments/${avalId}`, {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${storedToken}`, 
+                "Content-Type": "application/json",
+              },
+            });
+        
+            if (resp.ok) {
+              const text = await resp.text();
+              if (text) {
+                const data = JSON.parse(text);
+                getAval(data);
+              } else {
+                console.error("Resposta vazia");
+                getAval([]);
+              }
+            } else {
+              console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+              getAval([]);
+            }
+          } catch (error) {
+            console.error("Erro ao buscar usuário: ", error);
+            getAval([]);
+          }
+        }
+
+        async function obterUserporID(userID: number) {
+            try {
+              const storedToken = localStorage.getItem("token"); 
+              if (!storedToken) {
+                console.error("Token não encontrado");
+                getUser([]);
+                return;
+              }
+          
+              const resp = await fetch(`http://localhost:3002/user/id/${userID}`, {
+                method: "GET",
+                headers: {
+                  "Authorization": `Bearer ${storedToken}`, 
+                  "Content-Type": "application/json",
+                },
+              });
+          
+              if (resp.ok) {
+                const text = await resp.text();
+                if (text) {
+                  const data = JSON.parse(text);
+                  getUser(data);
+                } else {
+                  console.error("Resposta vazia");
+                  getUser([]);
+                }
+              } else {
+                console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+                getUser([]);
+              }
+            } catch (error) {
+              console.error("Erro ao buscar usuário: ", error);
+              getUser([]);
+            }
+          }
 
     return(
         <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -28,13 +130,25 @@ export default function Home(){
                 className="w-12 h-12 rounded-full"
                 />
                 <div>
-                <p className="text-white font-bold">Nome do Usuário</p>
-                <p className="text-gray-400 text-sm">
-                    12/12/2024, às 14:30 - Curso - Departamento
-                </p>
+                    <p className="text-white font-bold"> {user.name} </p>
+                    <div>
+                        <p className="text-gray-400 text-sm">
+                            {new Date(aval.createdt).toLocaleDateString("pt-BR", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                            })}
+                            , às{" "}
+                            {new Date(aval.createdt).toLocaleTimeString("pt-BR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })}
+                            - {user.curso} - {user.departamento}
+                        </p>
+                    </div>                              
                 </div>
             </div>
-            <p className="text-gray-300 mt-4">Conteúdo do post...</p>
+            <p className="text-gray-300 mt-4">{aval.conteudo}</p>
 
             <div className="flex justify-between items-center mt-4">
                 <div className="flex gap-2">
