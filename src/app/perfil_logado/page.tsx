@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import EditarPerfilModal from "../components/EditPerfilModal";
 
 export default function Profile() {
 
@@ -201,6 +202,8 @@ export default function Profile() {
     }
   }
 
+  
+
 
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -238,9 +241,7 @@ export default function Profile() {
 
           {/* Botões de Ação */}
           <div className="flex justify-center mt-6 gap-4">
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600">
-              Editar Perfil
-            </button>
+            <EditarPerfilModal />
             <button type= "button" onClick={deleteUser} className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-600">
               Excluir Perfil
             </button>
