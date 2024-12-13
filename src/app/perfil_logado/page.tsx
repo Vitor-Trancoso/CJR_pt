@@ -20,7 +20,7 @@ export default function Profile() {
         obterUser(); 
       } else {
         
-        router.push('/');
+        router.push('/perfil_deslogado');
     }
     obterUser()}
     }, [router]);
@@ -91,7 +91,7 @@ export default function Profile() {
       })
       if (resp.ok){
         alert('usuário deletado')
-        router.push("/")
+        router.push("/login")
       }
       else{
         console.error(`Erro: ${resp.status} - ${resp.statusText}`);
@@ -202,14 +202,30 @@ export default function Profile() {
     }
   }
 
-  
+  function logout() {
+    localStorage.removeItem("token");
+    router.push("/"); 
+  }
+
+  function feed(){
+    router.push('/')
+  }
 
 
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
       {/* Header */}
       <header className="w-full bg-gray-800 px-8 py-4 flex justify-between items-center shadow-md">
-        <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-35 h-12" />
+      <button
+        className="w-35 h-12 p-0 bg-transparent border-none focus:outline-none hover:opacity-80 transition"
+        onClick={feed}
+      >
+        <img
+          src="/images/unblogo.jpg"
+          alt="Logo UnB"
+          className="w-full h-full"
+        />
+      </button>
         <div className="flex items-center gap-4">
           <button className="text-white">
             <i className="fas fa-bell text-xl"></i>
@@ -242,8 +258,11 @@ export default function Profile() {
           {/* Botões de Ação */}
           <div className="flex justify-center mt-6 gap-4">
             <EditarPerfilModal />
-            <button type= "button" onClick={deleteUser} className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-600">
+            <button type="button" onClick={deleteUser} className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-600">
               Excluir Perfil
+            </button>
+            <button type="button" onClick={logout} className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600">
+              Sair
             </button>
           </div>
         </div>

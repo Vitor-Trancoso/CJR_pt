@@ -58,7 +58,7 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
         obterUser(); 
       } else {
         
-        router.push('/');
+        router.push('/perfil_deslogado');
     }
     obterUser()}
     }, [router]);
@@ -169,7 +169,7 @@ const togglePasswordVisibility = (field: keyof PasswordFields) => {
       
           if (resp.status == 204 || resp.status == 200) {
             alert("Usuário alterado com sucesso!");
-            router.push("/");
+            router.push("/login");
           } else {
             console.error(`Erro ao atualizar usuário: ${resp.status} - ${resp.statusText}`);
           }

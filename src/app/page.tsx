@@ -1,123 +1,118 @@
 'use client'
-import { useState } from "react";
-import Form from "./fonts/components/Form";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 
-export default function Home() {
-
+export default function Professores() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para saber se o usuário está logado
+  const [user, setUser] = useState(null);
   const Router = useRouter();
-  const [user, checkUser] = useState<any>([]);
 
-  function cadastro(){
-      Router.push('/cadastro')
+  useEffect(() => {
+    // Aqui você pode verificar se o usuário está logado (exemplo: se há um token no localStorage)
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Se estiver logado, você pode buscar os dados do usuário, por exemplo:
+      // fetchUser(token);
+      setIsLoggedIn(true);
+
+    }
+  }, []);
+
+  function login(){
+    Router.push('/login')
   }
 
-  async function checkUserfunc(){
-    try{
-      const resp = await fetch('http://localhost:3002/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json'
-        },
-        body: JSON.stringify(user)
-      })
-
-      if (resp.ok) {
-        const data = await resp.json(); 
-        console.log('Resposta da API:', data); 
-        const token = data.access_token; 
-        if (token) {
-          localStorage.setItem('token', token); 
-          Router.push('/perfil_logado'); 
-          alert('Login realizado com sucesso');
-        } else {
-          console.error('Token não encontrado na resposta');
-        }
-      }
-
-      else{
-        alert ("senha e/ou email errados")
-        console.error('Erro ao realizar login')
-      }
-    }
-
-    catch (error){
-      console.error('Erro ao realizar login', error)
-    }
+  function perfil(){
+    Router.push('/perfil_logado')
   }
 
   return (
-    <div className="flex w-full h-screen bg-gray-900">
-      {/* Seção do Formulário */}
-        <div className="w-full flex items-center justify-center lg:w-1/2 px-4">
-        <div className="bg-gray-800 px-10 py-20 rounded-3xl border-2 border-gray-700 shadow-lg">
-        <h1 className="text-5xl font-semibold text-white">
-          Avaliação de Professores
-        </h1>
-        <p className="font-medium text-lg text-gray-400 mt-4">
-          Cadastre seus Dados
-        </p>
-        <div className="mt-8">
-          <div>
-            <label className="text-lg font-medium text-gray-300">Email</label>
-            <input
-              id = "email"
-              value ={user.email ?? ''}
-              onChange={(e) => checkUser({...user, email: e.target.value})}
-              className="w-full border-2 border-gray-600 rounded-xl p-4 mt-1 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Digite seu Email"
-              type="email"
-            />
-          </div>
-          <div className="mt-6">
-            <label className="text-lg font-medium text-gray-300">Senha</label>
-            <input
-              id="email"
-              value ={user.senha ?? ''}
-              onChange={(e) => checkUser({...user, senha: e.target.value})}
-              className="w-full border-2 border-gray-600 rounded-xl p-4 mt-1 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Digite sua senha"
-              type="password"
-            />
-          </div>
-          <div className="mt-8 flex justify-between items-center">
-            <div>
-              <input type="checkbox" id="remember" className="accent-green-500" />
-              <label
-                className="ml-2 font-medium text-gray-300"
-                htmlFor="remember"
-              >
-                Lembre de mim
-              </label>
-            </div>
-            <button className="font-medium text-green-400 hover:underline">
-              Esqueci a Senha
+    <div className="w-full h-screen bg-gradient-custom">
+      {/* Header */}
+      <header className="w-full bg-gray-800 px-8 py-4 flex justify-between items-center shadow-md">
+        <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-35 h-12" />
+        <div className="flex items-center gap-4">
+          {isLoggedIn ? (
+            <>
+            <button className="text-white">
+              <i className="fas fa-bell text-xl"></i>
             </button>
-          </div>
-          <div className="mt-8 flex flex-col gap-y-4">
-            <button onClick={checkUserfunc} className="py-3 rounded-xl bg-green-500 text-white text-lg font-bold hover:bg-green-600 active:scale-95 transition">
-              Entrar
+            <button
+              className="w-20 h-20 rounded-full border-2 border-white p-1 focus:outline-none hover:opacity-80 transition"
+              onClick={perfil}
+            >
+              <img
+                src="/images/morty-avatar.png" 
+                alt="Avatar"
+                className="w-full h-full rounded-full"
+              />
             </button>
-          </div>
-          <div className="mt-8 flex justify-center items-center">
-            <p className="font-medium text-gray-400">Não possui conta?</p>
-            <button onClick={cadastro} className="text-green-400 font-medium ml-2 hover:underline">
-              Criar Conta
+          </>
+          ) : (
+            <button onClick={login} className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md font-bold hover:bg-blue-600 transition">
+              Login
             </button>
-          </div>
+          )}
+        </div>
+      </header>
+
+      {/* Campo de Busca */}
+      <div className="flex justify-between items-center px-8 py-4 bg-gray-900">
+        <h1 className="text-white text-2xl font-bold">Novos Professores</h1>
+        <div className="flex items-center gap-4">
+          <input
+            type="text"
+            placeholder="Buscar Professor(a)"
+            className="px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
       </div>
+
+      {/* Novos Professores */}
+      <div className="grid grid-cols-4 gap-6 px-8 mt-4">
+        {[1, 2, 3, 4].map((professor) => (
+          <div
+            key={professor}
+            className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center"
+          >
+            <div className="w-24 h-24 bg-blue-300 rounded-full"></div>
+            <h2 className="text-gray-800 text-lg font-bold mt-2">Nome</h2>
+            <p className="text-gray-500">Disciplina</p>
+          </div>
+        ))}
       </div>
-      {/* Seção da Imagem e Texto */}
-      <div className="hidden relative lg:flex h-full w-1/2 flex-col items-center justify-center bg-gradient-to-br from-[#004aad] to-[#cb6ce6] bg-gradient-to-br animate-gradient">
-        <img
-          src="/images/unblogo.jpg"
-          alt="Logo da UnB"
-          className="w-1/3 mx-auto mb-6"
-        />
-        <p className="text-xl text-white font-medium">
-          Avaliação de Professores
-        </p>
+
+      <hr className="my-6 border-gray-600" />
+
+      {/* Todos os Professores */}
+      <div className="px-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-white text-2xl font-bold">Todos os Professores</h1>
+          <div className="flex gap-4">
+            {isLoggedIn && (
+              <>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">
+                  Nova Publicação
+                </button>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">
+                  Ordenar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-4 gap-6 mt-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((professor) => (
+            <div
+              key={professor}
+              className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center"
+            >
+              <div className="w-24 h-24 bg-blue-300 rounded-full"></div>
+              <h2 className="text-gray-800 text-lg font-bold mt-2">Nome</h2>
+              <p className="text-gray-500">Disciplina</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

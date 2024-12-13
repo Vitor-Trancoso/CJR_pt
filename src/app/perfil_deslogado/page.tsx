@@ -1,10 +1,29 @@
+"use client"
+import { useRouter } from "next/navigation";
+
 export default function Profile() {
+  const router = useRouter();
+  function login(){
+    router.push('/login')
+  }
+  function feed(){
+    router.push('/')
+  }
   return (
     <div className="flex flex-col items-center w-full h-screen bg-gradient-to-br animate-gradient">
       {/* Header */}
       <div className="w-full bg-gray-800 flex items-center justify-between px-8 py-4 shadow-lg">
-        <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-35 h-12" />
-        <button className="text-white bg-blue-500 px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition">
+      <button
+        className="w-35 h-12 p-0 bg-transparent border-none focus:outline-none hover:opacity-80 transition"
+        onClick={feed}
+      >
+        <img
+          src="/images/unblogo.jpg"
+          alt="Logo UnB"
+          className="w-full h-full"
+        />
+      </button>
+        <button onClick={login} className="text-white bg-blue-500 px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition">
           Login
         </button>
       </div>
