@@ -9,6 +9,7 @@ export default function Profile() {
   const [user, getUser] = useState<any>([]);
   const [FullUser, getFullUser] = useState<any>([])
   const [post, getPosts] = useState<any[]>([])
+  const [comments, countcomments] = useState<any>([])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -32,6 +33,7 @@ export default function Profile() {
         findPosts();
         }
       }, [user.id]);
+    
 
 
   async function obterUser() {
@@ -166,6 +168,36 @@ export default function Profile() {
     }
   }
 
+  async function countComments(postId: number){
+    try{
+      const storedToken = localStorage.getItem("token"); 
+      if (!storedToken) {
+        console.error("Token não encontrado");
+        getUser([]);
+        return;
+      }
+      const resp = await fetch(`http://localhost:3002/avaliacao/countcomments/${postId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${storedToken}`, 
+          "Content-Type": "application/json",
+        },
+      });
+      if (resp.ok) {
+          const text = await resp.text();
+          const data = JSON.parse(text);
+          console.log("Dados da API:", data);
+          countcomments(data)
+        }
+      else {
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+      }
+    }
+    catch (error) {
+      console.error("Erro ao buscar posts: ", error);
+    }
+  }
+
 
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -221,6 +253,7 @@ export default function Profile() {
             {post.length > 0 ? (
               <ul>
                 {post.map((post) => (
+                  
                   <li key={post.id} className="mb-4">
                     <div className="bg-gray-800 p-4 rounded-lg shadow-md">
                       <div className="flex items-center gap-4">
@@ -230,7 +263,7 @@ export default function Profile() {
                           className="w-12 h-12 rounded-full"
                         />
                         <div>
-                          <p className="text-white font-bold">{post.name || "Usuário"}</p>
+                          <p className="text-white font-bold">{post.name }</p>
                           <p className="text-gray-400 text-sm">
                             {new Date(post.createdt).toLocaleDateString("pt-BR", {
                               day: "2-digit",
@@ -247,15 +280,9 @@ export default function Profile() {
                           </p>
                         </div>
                       </div>
-                      <p className="text-gray-300 mt-4">{post.conteudo}</p>
-                      <div className="flex justify-between items-center mt-4">
-                        <p className="text-gray-400 text-sm">
-                          {post.comentarios
-                            ? `${post.comentarios.length} comentário${
-                                post.comentarios.length > 1 ? "s" : ""
-                              }`
-                            : "Sem comentários"}
-                        </p>
+                          <p className="text-gray-300 mt-4">{post.conteudo}</p>
+                          <div className="flex justify-between items-center mt-4">
+
                         <div className="flex gap-2">
                           <button className="text-green-500 hover:text-green-600">
                             <i className="fas fa-edit"></i>
