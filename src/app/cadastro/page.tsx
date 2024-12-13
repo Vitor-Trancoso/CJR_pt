@@ -22,7 +22,7 @@ export default function Home() {
         const users = await resp.json();
         setUser({});
         alert('Usuário criado');
-        router.push('/');
+        router.push('/login');
       }
       else{
         const errorMessage = await resp.text();
