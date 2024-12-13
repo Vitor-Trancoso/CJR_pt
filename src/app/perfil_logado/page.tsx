@@ -34,7 +34,10 @@ export default function Profile() {
         }
       }, [user.id]);
     
-
+      function comentarios(id: number) {  
+        localStorage.setItem('postId', id.toString());  
+        router.push("/comentarios");
+    }
 
   async function obterUser() {
     try {
@@ -255,15 +258,18 @@ export default function Profile() {
                 {post.map((post) => (
                   
                   <li key={post.id} className="mb-4">
-                    <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-                      <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => comentarios(post.id)}
+                      className="w-full bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none"
+                    >
+                      <div className="flex items-center gap-2">
                         <img
-                          src="/images/morty-avatar.png" 
+                          src="/images/morty-avatar.png"
                           alt="Avatar"
                           className="w-12 h-12 rounded-full"
                         />
                         <div>
-                          <p className="text-white font-bold">{post.name }</p>
+                          <p className="text-white font-bold">{user.name}</p>
                           <p className="text-gray-400 text-sm">
                             {new Date(post.createdt).toLocaleDateString("pt-BR", {
                               day: "2-digit",
@@ -275,24 +281,22 @@ export default function Profile() {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
-                            - {FullUser.curso} -{" "}
-                            {FullUser.departamento}
+                            - {FullUser.curso} - {FullUser.departamento}
                           </p>
                         </div>
                       </div>
-                          <p className="text-gray-300 mt-4">{post.conteudo}</p>
-                          <div className="flex justify-between items-center mt-4">
-
+                      <p className="text-gray-300 mt-4 text-left">{post.conteudo}</p>
+                      <div className="flex justify-between items-center mt-4">
                         <div className="flex gap-2">
-                          <button className="text-green-500 hover:text-green-600">
+                          <div className="text-green-500 hover:text-green-600 cursor-pointer">
                             <i className="fas fa-edit"></i>
-                          </button>
-                          <button className="text-red-500 hover:text-red-600">
+                          </div>
+                          <div className="text-red-500 hover:text-red-600 cursor-pointer">
                             <i className="fas fa-trash"></i>
-                          </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </button>
                   </li>
                 ))}
               </ul>
