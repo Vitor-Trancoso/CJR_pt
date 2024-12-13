@@ -165,49 +165,43 @@ export default function Home(){
             <div className="bg-gray-900 rounded-xl p-6 shadow-lg w-11/12 max-w-4xl mt-6">
             <h2 className="text-white text-2xl font-bold mb-4">Comentários</h2>
 
-            <div className="bg-gray-800 p-4 rounded-lg shadow-md mb-4">
+          {aval.comments && aval.comments.length > 0 ? (
+            aval.comments.map((comment: any, index: number) => (
+              <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-md mb-4">
                 <div className="flex items-center gap-4">
-                <img
+                  <img
                     src="/images/morty-avatar.png"
                     alt="Avatar"
                     className="w-10 h-10 rounded-full"
-                />
-                <div>
-                    <p className="text-white font-bold">Autor do Comentário</p>
+                  />
+                  <div>
+                    <p className="text-white font-bold">{comment.userName}</p>
                     <p className="text-gray-400 text-sm">
-                    12/12/2024, às 15:00
+                      {new Date(comment.createdAt).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })} - {new Date(comment.createdAt).toLocaleTimeString("pt-BR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </p>
+                  </div>
                 </div>
-                </div>
-                <p className="text-gray-300 mt-4">Este é um comentário de exemplo.</p>
-            </div>
+                <p className="text-gray-300 mt-4">{comment.content}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">Nenhum comentário ainda.</p>
+          )}
 
-            <div className="bg-gray-800 p-4 rounded-lg shadow-md mb-4">
-                <div className="flex items-center gap-4">
-                <img
-                    src="/images/morty-avatar.png"
-                    alt="Avatar"
-                    className="w-10 h-10 rounded-full"
-                />
-                <div>
-                    <p className="text-white font-bold">Outro Autor</p>
-                    <p className="text-gray-400 text-sm">
-                    12/12/2024, às 15:30
-                    </p>
-                </div>
-                </div>
-                <p className="text-gray-300 mt-4">Outro comentário de exemplo.</p>
-            </div>
-
-            <div className="mt-6">
-                <button className="bg-blue-500 text-white mt-4 px-6 py-2 rounded-lg shadow-md hover:bg-blue-600">
-                Comentar
-                </button>
-            </div>
-            </div>
-        </main>
+          <div className="mt-6">
+            <button className="bg-blue-500 text-white mt-4 px-6 py-2 rounded-lg shadow-md hover:bg-blue-600">
+              Comentar
+            </button>
+          </div>
         </div>
-
-
-    )
+      </main>
+    </div>
+  );
 }
