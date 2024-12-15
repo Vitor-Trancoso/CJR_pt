@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import './NewPublicationModal.css';
+import './EditCommentModal.css';
 
-export default function NovaPublicacaoModal() {
+export default function EditarComentarioModal() {
 
   // Estado para controlar a visibilidade do modal
   const [isOpen, setIsOpen] = useState(false);
@@ -37,28 +37,7 @@ export default function NovaPublicacaoModal() {
 
             {/* Formulário */}
             <form id="ElementosModal" /*className="space-y-4 mt-6"*/>
-              <div>
-
-                {/* Nome do Professor*/}
-                <input
-                  type="text"
-                  placeholder="Nome do professor"
-                  id="NomeDoProfessor"
-                  /*className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 placeholder-gray-400 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"*/
-                />
-              </div>
-
-
-              <div>
-                {/* Disciplina */}
-                <input
-                  type="text"
-                  placeholder="Disciplina"
-                  id="Disciplina"
-                  /*className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 placeholder-gray-400 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"*/
-                />
-              </div>
-
+              
               <div>
                 {/* Botões da Publicação*/}
               <div id='Botoes'>
@@ -74,13 +53,14 @@ export default function NovaPublicacaoModal() {
                 <textarea name="Publicacao" id="Publicacao"></textarea>  
               </div>
 
-                {/* Botão Avaliar e Cancelar (Enviar e Fechar) */}
-              <div>  
+                {/* Botão Lixeira, Editar e Cancelar (Deletar, Enviar e Fechar) */}
+              <div> 
+                <button id="Lixeira"> <img src="/images/trash-can.png" alt="Logo UnB" className="w-22 h-12" /> </button>
                 <button id='BotaoCancelar' onClick={handleClose}>Cancelar</button>
-                <button id='BotaoAvaliar' type='submit'>Avaliar</button>
+                <button id='BotaoEditar' type='submit'>Editar</button>
               </div>
 
-            </form>
+            </form> 
           </div>
         </div>
       )}
