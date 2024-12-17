@@ -1,6 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import NovaPublicacaoModal from './components/NewPublicationModal';
 
 export default function Professores() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -232,9 +233,7 @@ export default function Professores() {
       <div className="flex gap-4">
         {isLoggedIn && (
           <>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">
-              Nova Publicação
-            </button>
+            <NovaPublicacaoModal/>
             <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">
               Ordenar
             </button>
