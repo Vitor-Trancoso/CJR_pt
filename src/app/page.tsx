@@ -7,6 +7,15 @@ export default function Professores() {
   const [user, setUser] = useState(null);
   const Router = useRouter();
   const [professor, getprofessor] = useState<any>([]);
+  const [professorDetails, setprofessorDetails] = useState<Record<number, any>>({});
+
+  const imagensPerfil = [
+    '/images/Katniss.jpg', 
+    '/images/Peeta.jpg',
+    '/images/haymitch.jpg', 
+    '/images/effie.jpg', 
+    '/images/snow.jpg', 
+  ];
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -38,7 +47,10 @@ export default function Professores() {
       id: number;
       descricao: string;
     }>;
+    fotoPerfil?: string;
   }
+
+
 
   useEffect(() => {
     async function getprof() {
@@ -54,7 +66,11 @@ export default function Professores() {
           const text = await resp.text();
           if (text) {
             const data = JSON.parse(text);
-            getprofessor(data); 
+            const professoresComFoto = data.map((prof: Professor, index: number) => ({
+              ...prof,
+              fotoPerfil: imagensPerfil[index % imagensPerfil.length],
+            }));
+            getprofessor(professoresComFoto);
           } else {
             console.error("Resposta vazia");
             getprofessor([]);
@@ -71,7 +87,67 @@ export default function Professores() {
     getprof();
   }, []);
 
-  const professorsSorted = professor.sort((a: Professor, b: Professor) => b.id - a.id);
+  const professorsSorted = [...professor].sort((a, b) => b.id - a.id);
+
+  async function getdisciplina(id: number) {
+    try {
+      const resp = await fetch(`http://localhost:3002/diciplina/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        const text = await resp.text();
+        if (text) {
+          const data = JSON.parse(text);
+          console.log("disciplinas buscadas:", data);
+          setprofessorDetails((prevDetails) => ({
+            ...prevDetails,
+            [id]: data,
+          }));
+        } else {
+          console.error("Resposta vazia");
+        }
+      } else {
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar disciplinas: ", error);
+    }
+  }
+
+  useEffect(() => {
+    async function fetchProfessores() {
+      try {
+        const resp = await fetch("http://localhost:3002/professor", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          getprofessor(data);
+        } else {
+          console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar professores: ", error);
+      }
+    }
+    fetchProfessores();
+  }, []);
+
+  useEffect(() => {
+    professorsSorted.forEach((professor) => {
+      if (!professorDetails[professor.diciplinaID]) {
+        getdisciplina(professor.diciplinaID);
+      }
+    });
+  }, [professorsSorted]);
 
   return (
     <div className="w-full h-screen bg-gradient-custom">
@@ -123,9 +199,13 @@ export default function Professores() {
           {professorsSorted.length > 0 ? (
             professorsSorted.map((item: Professor) => (
               <div key={item.id} className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center">
-                <div className="w-24 h-24 bg-blue-300 rounded-full"></div>
+                <img
+                  src={item.fotoPerfil ? item.fotoPerfil : '/images/default-avatar.png'} 
+                  alt={`Foto de ${item.nome}`} 
+                  className="w-24 h-24 rounded-full object-cover"
+                />
                 <h2 className="text-gray-800 text-lg font-bold mt-2">{item.nome}</h2>
-                <p className="text-gray-500">{item.disciplina ? item.disciplina.nome : 'Sem Disciplina'}</p>
+                <p className="text-gray-500">{professorDetails[item.diciplinaID]?.nome}</p>
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex gap-2">
                     <div className="text-green-500 hover:text-green-600 cursor-pointer">
@@ -168,9 +248,13 @@ export default function Professores() {
           {professorsSorted.length > 0 ? (
             professorsSorted.map((item: Professor) => (
               <div key={item.id} className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center">
-                <div className="w-24 h-24 bg-blue-300 rounded-full"></div>
+                <img
+                  src={item.fotoPerfil ? item.fotoPerfil : '/images/default-avatar.png'} 
+                  alt={`Foto de ${item.nome}`}
+                  className="w-24 h-24 rounded-full object-cover"
+                />
                 <h2 className="text-gray-800 text-lg font-bold mt-2">{item.nome}</h2>
-                <p className="text-gray-500">{item.disciplina ? item.disciplina.nome : 'Sem Disciplina'}</p>
+                <p className="text-gray-500">{professorDetails[item.diciplinaID]?.nome}</p>
               </div>
             ))
           ) : (
