@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './NewPublicationModal.css';
+import { useRouter } from "next/navigation";
 export default function NovaPublicacaoModal() {
   // Estado para controlar a visibilidade do modal
   const [isOpen, setIsOpen] = useState(false);
@@ -8,6 +9,80 @@ export default function NovaPublicacaoModal() {
   const handleOpen = () => setIsOpen(true);
   // Fecha o modal
   const handleClose = () => setIsOpen(false);
+
+  const [professor, getprofessor] = useState<any>([]);
+  const [professorDetails, setprofessorDetails] = useState<Record<number, any>>({});
+  const Router = useRouter();
+  const [disciplinas, getdisciplinas] = useState<any>([]);
+
+  async function crateAval(){
+
+  }
+
+  useEffect(() => {
+    async function getprof() {
+      try {
+        const resp = await fetch("http://localhost:3002/professor", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (resp.ok) {
+          const text = await resp.text();
+          if (text) {
+            const data = JSON.parse(text);
+            getprofessor(data);
+          } else {
+            console.error("Resposta vazia");
+            getprofessor([]);
+          }
+        } else {
+          console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+          getprofessor([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar usuários: ", error);
+        getprofessor([]);
+      }
+    }
+    getprof();
+  }, []);
+
+  const professorsSorted = [...professor].sort((a, b) => b.id - a.id);
+
+  async function getdisciplina(id: number) {
+    try {
+      const resp = await fetch(`http://localhost:3002/diciplina/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        const text = await resp.text();
+        if (text) {
+          const data = JSON.parse(text);
+          console.log("disciplinas buscadas:", data);
+          setprofessorDetails((prevDetails) => ({
+            ...prevDetails,
+            [id]: data,
+          }));
+          getdisciplinas(data)
+        } else {
+          console.error("Resposta vazia");
+        }
+      } else {
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar disciplinas: ", error);
+    }
+  }
+  
+
   return (
     <div>
       {/* Botão para abrir o modal */}

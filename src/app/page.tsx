@@ -2,10 +2,10 @@
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import NovaPublicacaoModal from './components/NewPublicationModal';
+import NovoProfessorModal from './components/CriarProf';
 
 export default function Professores() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
   const Router = useRouter();
   const [professor, getprofessor] = useState<any>([]);
   const [professorDetails, setprofessorDetails] = useState<Record<number, any>>({});
@@ -234,9 +234,7 @@ export default function Professores() {
         {isLoggedIn && (
           <>
             <NovaPublicacaoModal/>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">
-              Ordenar
-            </button>
+            <NovoProfessorModal/>
           </>
         )}
       </div>
