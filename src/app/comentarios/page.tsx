@@ -124,21 +124,41 @@ export default function Home(){
               getUser([]);
             }
           }
+    function feed(){
+      router.push('/')
+    }
+    function perfil() {
+      router.push('/perfil_logado');
+    }
 
 
     return(
         <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
         <header className="w-full bg-gray-800 px-8 py-4 flex justify-between items-center shadow-md">
-            <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-35 h-12" />
+        <button
+          className="w-35 h-12 p-0 bg-transparent border-none focus:outline-none hover:opacity-80 transition"
+          onClick={feed}
+        >
+          <img
+            src="/images/unblogo.jpg"
+            alt="Logo UnB"
+            className="w-full h-full"
+          />
+        </button>
             <div className="flex items-center gap-4">
             <button className="text-white">
                 <i className="fas fa-bell text-xl"></i>
             </button>
-            <img
-                src="/images/morty-avatar.png"
-                alt="Avatar"
-                className="w-10 h-10 rounded-full border-2 border-white"
-            />
+            <button
+                className="w-20 h-20 rounded-full border-2 border-white p-1 focus:outline-none hover:opacity-80 transition"
+                onClick={perfil}
+              >
+                <img
+                  src="/images/morty-avatar.png"
+                  alt="Avatar"
+                  className="w-full h-full rounded-full"
+                />
+              </button>
             </div>
         </header>
 
