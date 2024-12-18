@@ -1,3 +1,5 @@
+import NovaPublicacaoModal from "../components/NewPublicationModal";; // Importação do Modal
+
 export default function Professores() {
   return (
     <div className="w-full h-screen bg-gradient-custom">
@@ -51,9 +53,8 @@ export default function Professores() {
             Todos os Professores
           </h1>
           <div className="flex gap-4">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">
-              Nova Publicação
-            </button>
+            {/* Modal de Nova Publicação */}
+            <NovaPublicacaoModal />
             <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">
               Ordenar
             </button>
