@@ -125,7 +125,9 @@ export default function Professores() {
     });
   }, [professorsSorted]);
 
-  function pagprofessor(id: number) {
+  function pagprofessor(id: number, foto:string) {
+    localStorage.setItem('profID', id.toString());  
+    localStorage.setItem('proffoto', foto);  
     Router.push('/professor');
   }
 
@@ -173,7 +175,7 @@ export default function Professores() {
             <button
               key={item.id}
               className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center focus:outline-none hover:opacity-80 transition"
-              onClick={() => pagprofessor(item.id)}
+              onClick={() => pagprofessor(item.id, item.fotoPerfil!)}
             >
               <img
                 src={item.fotoPerfil}
@@ -199,7 +201,7 @@ export default function Professores() {
             <button
               key={item.id}
               className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center focus:outline-none hover:opacity-80 transition"
-              onClick={() => pagprofessor(item.id)}
+              onClick={() => pagprofessor(item.id, item.fotoPerfil!)}
             >
               <img
                 src={item.fotoPerfil}
