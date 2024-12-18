@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
+import ComentarioModal from "../components/CommentModal";
 
 export default function Home(){
     const [aval, getAval] = useState<any>([]);
@@ -216,9 +217,7 @@ export default function Home(){
           )}
 
           <div className="mt-6">
-            <button className="bg-blue-500 text-white mt-4 px-6 py-2 rounded-lg shadow-md hover:bg-blue-600">
-              Comentar
-            </button>
+            <ComentarioModal/>
           </div>
         </div>
       </main>
