@@ -4,15 +4,13 @@ import { useRouter } from "next/navigation";
 
 export default function NovoProfessorModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const [nome, setNome] = useState(""); // Nome do professor
-  const [disciplina, setDisciplina] = useState(""); // Disciplina
-  const [disciplinacomID, setdisciplinacomID] = useState(""); // Departamento
-  const [loading, setLoading] = useState(false); // Estado de carregamento
+  const [disciplina, setDisciplina] = useState("");
+  const [loading, setLoading] = useState(false);
   const Router = useRouter();
-  const [professor, setprofessor] = useState<Professor>({
+  const [professor, setProfessor] = useState<Professor>({
     nome: "",
     departamento: "",
-    diciplinaID: 0, 
+    diciplinaID: 0,
   });
 
   // Abre/Fecha o modal
@@ -24,11 +22,23 @@ export default function NovoProfessorModal() {
     departamento: string;
     diciplinaID: number;
   }
-  function creating(){
-    console.log(disciplina)
-    checkDisciplina(disciplina)
-  }
 
+  useEffect(() => {
+    if (professor.diciplinaID !== 0) {
+      createProf();
+      handleClose();
+    }
+  }, [professor.diciplinaID]);
+  
+
+  useEffect(() => {
+    console.log("Estado atualizado:", professor);
+  }, [professor]);
+
+  function creating() {
+    console.log("Disciplina digitada:", disciplina);
+    checkDisciplina(disciplina);
+  }
 
   async function createProf() {
     try {
@@ -58,16 +68,9 @@ export default function NovoProfessorModal() {
         },
       });
       const data = await resp.json();
-      if (data && data.length > 0) {
-        setdisciplinacomID(data);
-        console.log("existe")
-        console.log(data[0].id)
-        setdisciplinacomID(data);
-        console.log(disciplinacomID)
-        setprofessor(prevState => ({ ...prevState, diciplinaID:data[0].id}));
-        console.log(professor)
-        createProf()
-        handleClose()
+      if (data && data.id) {
+        console.log("Disciplina existe, ID:", data.id);
+        setProfessor((prevState) => ({ ...prevState, diciplinaID: data.id }));
       } else {
         createdisciplina(Dnome);
       }
@@ -87,15 +90,8 @@ export default function NovoProfessorModal() {
       });
       if (resp.ok) {
         const data = await resp.json();
-        setdisciplinacomID(data);
-        console.log("não existe")
-        console.log(data.id)
-        setdisciplinacomID(data);
-        console.log(disciplinacomID)
-        setprofessor(prevState => ({ ...prevState, diciplinaID: data.id }));
-        console.log(professor)
-        createProf()
-        handleClose()
+        console.log("Disciplina criada, ID:", data.id);
+        setProfessor((prevState) => ({ ...prevState, diciplinaID: data.id }));
       }
     } catch (error) {
       console.error("Erro ao criar disciplina: ", error);
@@ -121,65 +117,72 @@ export default function NovoProfessorModal() {
           {/* Aparência do Modal */}
           <div className="relative bg-white w-full max-w-md rounded-2xl shadow-lg p-6 z-50">
             <h2 className="text-xl font-semibold mb-4">Criar Novo Professor</h2>
-              {/* Nome */}
-              <div>
-                <label className="block text-gray-700">Nome:</label>
-                <input
-                  type="text"
-                  value={professor.nome}
-                  onChange={(e) => setprofessor({ ...professor, nome: e.target.value })}
-                  placeholder="Nome do professor"
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                />
-              </div>
+            {/* Nome */}
+            <div>
+              <label className="block text-gray-700">Nome:</label>
+              <input
+                type="text"
+                value={professor.nome}
+                onChange={(e) =>
+                  setProfessor({ ...professor, nome: e.target.value })
+                }
+                placeholder="Nome do professor"
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              />
+            </div>
 
-              {/* Disciplina */}
-              <div>
-                <label className="block text-gray-700">Disciplina:</label>
-                <input
-                  type="text"
-                  value={disciplina}
-                  onChange={(e) => setDisciplina(e.target.value)}
-                  placeholder="Disciplina"
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                />
-              </div>
+            {/* Disciplina */}
+            <div>
+              <label className="block text-gray-700">Disciplina:</label>
+              <input
+                type="text"
+                value={disciplina}
+                onChange={(e) => setDisciplina(e.target.value)}
+                placeholder="Disciplina"
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              />
+            </div>
 
-              {/* Departamento */}
-              <div>
-                <label className="block text-gray-700">Departamento:</label>
-                <input
-                  type="text"
-                  value={professor.departamento}
-                  onChange={(e) => setprofessor({ ...professor, departamento: e.target.value })}
-                  placeholder="Departamento"
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                />
-              </div>
+            {/* Departamento */}
+            <div>
+              <label className="block text-gray-700">Departamento:</label>
+              <input
+                type="text"
+                value={professor.departamento}
+                onChange={(e) =>
+                  setProfessor({
+                    ...professor,
+                    departamento: e.target.value,
+                  })
+                }
+                placeholder="Departamento"
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              />
+            </div>
 
-              {/* Botões */}
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  onClick={creating}
-                  className={`px-4 py-2 text-white rounded-lg ${
-                    loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
-                  }`}
-                >
-                  {loading ? "Salvando..." : "Criar"}
-                </button>
-              </div>
+            {/* Botões */}
+            <div className="flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                onClick={creating}
+                className={`px-4 py-2 text-white rounded-lg ${
+                  loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
+                }`}
+              >
+                {loading ? "Salvando..." : "Criar"}
+              </button>
+            </div>
           </div>
         </div>
       )}

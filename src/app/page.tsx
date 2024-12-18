@@ -9,13 +9,14 @@ export default function Professores() {
   const Router = useRouter();
   const [professor, getprofessor] = useState<any>([]);
   const [professorDetails, setprofessorDetails] = useState<Record<number, any>>({});
+  const [currentPage, setCurrentPage] = useState(0); // Página atual para navegação dos professores
 
   const imagensPerfil = [
-    '/images/Katniss.jpg', 
+    '/images/Katniss.jpg',
     '/images/Peeta.jpg',
-    '/images/haymitch.jpg', 
-    '/images/effie.jpg', 
-    '/images/snow.jpg', 
+    '/images/haymitch.jpg',
+    '/images/effie.jpg',
+    '/images/snow.jpg',
   ];
 
   useEffect(() => {
@@ -50,8 +51,6 @@ export default function Professores() {
     }>;
     fotoPerfil?: string;
   }
-
-
 
   useEffect(() => {
     async function getprof() {
@@ -103,7 +102,6 @@ export default function Professores() {
         const text = await resp.text();
         if (text) {
           const data = JSON.parse(text);
-          console.log("disciplinas buscadas:", data);
           setprofessorDetails((prevDetails) => ({
             ...prevDetails,
             [id]: data,
@@ -120,29 +118,6 @@ export default function Professores() {
   }
 
   useEffect(() => {
-    async function fetchProfessores() {
-      try {
-        const resp = await fetch("http://localhost:3002/professor", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (resp.ok) {
-          const data = await resp.json();
-          getprofessor(data);
-        } else {
-          console.error(`Erro: ${resp.status} - ${resp.statusText}`);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar professores: ", error);
-      }
-    }
-    fetchProfessores();
-  }, []);
-
-  useEffect(() => {
     professorsSorted.forEach((professor) => {
       if (!professorDetails[professor.diciplinaID]) {
         getdisciplina(professor.diciplinaID);
@@ -150,120 +125,108 @@ export default function Professores() {
     });
   }, [professorsSorted]);
 
-  function pagprofessor(id:number){
-    Router.push('/professor')
+  function pagprofessor(id: number) {
+    Router.push('/professor');
   }
+
+  const professorsPerPage = 4; // Professores exibidos por página
+  const paginatedProfessors = professorsSorted.slice(
+    currentPage * professorsPerPage,
+    (currentPage + 1) * professorsPerPage
+  );
 
   return (
     <div className="w-full h-screen bg-gradient-custom">
-  {/* Header */}
-  <header className="w-full bg-gray-800 px-8 py-4 flex justify-between items-center shadow-md">
-    <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-35 h-12" />
-    <div className="flex items-center gap-4">
-      {isLoggedIn ? (
-        <>
-          <button className="text-white">
-            <i className="fas fa-bell text-xl"></i>
-          </button>
-          <button
-            className="w-20 h-20 rounded-full border-2 border-white p-1 focus:outline-none hover:opacity-80 transition"
-            onClick={perfil}
-          >
-            <img
-              src="/images/morty-avatar.png"
-              alt="Avatar"
-              className="w-full h-full rounded-full"
-            />
-          </button>
-        </>
-      ) : (
-        <button onClick={login} className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md font-bold hover:bg-blue-600 transition">
-          Login
-        </button>
-      )}
-    </div>
-  </header>
-
-  {/* Campo de Busca */}
-  <div className="flex justify-between items-center px-8 py-4 bg-gray-900">
-    <div className="flex items-center gap-4">
-      <input
-        type="text"
-        placeholder="Buscar Professor(a)"
-        className="px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
-  </div>
-
-  {/* Novos Professores */}
-  <div className="px-8">
-    <div className="flex justify-between items-center">
-      <h1 className="text-white text-2xl font-bold">Novos Professores</h1>
-    </div>
-    <div className="grid grid-cols-4 gap-6 mt-4">
-      {professorsSorted.length > 0 ? (
-        professorsSorted.map((item: Professor) => (
-          <button
-            key={item.id}
-            className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center focus:outline-none hover:opacity-80 transition"
-            onClick={() => pagprofessor(item.id)}
-          >
-            <img
-              src={item.fotoPerfil} 
-              alt={`Foto de ${item.nome}`} 
-              className="w-24 h-24 rounded-full object-cover" 
-            />
-            <h2 className="text-gray-800 text-lg font-bold mt-2">{item.nome}</h2>
-            <p className="text-gray-500">{professorDetails[item.diciplinaID]?.nome}</p>
-          </button>
-        ))
-      ) : (
-        <div className="bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-6">
-          <p className="text-gray-300 text-center">Nenhum professor cadastrado.</p>
+      {/* Header */}
+      <header className="w-full bg-gray-800 px-8 py-4 flex justify-between items-center shadow-md">
+        <img src="/images/unblogo.jpg" alt="Logo UnB" className="w-35 h-12" />
+        <div className="flex items-center gap-4">
+          {isLoggedIn ? (
+            <>
+              <button className="text-white">
+                <i className="fas fa-bell text-xl"></i>
+              </button>
+              <button
+                className="w-20 h-20 rounded-full border-2 border-white p-1 focus:outline-none hover:opacity-80 transition"
+                onClick={perfil}
+              >
+                <img
+                  src="/images/morty-avatar.png"
+                  alt="Avatar"
+                  className="w-full h-full rounded-full"
+                />
+              </button>
+            </>
+          ) : (
+            <button onClick={login} className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md font-bold hover:bg-blue-600 transition">
+              Login
+            </button>
+          )}
         </div>
-      )}
-    </div>
-    <hr className="my-6 border-gray-600" />
-  </div>
+      </header>
 
-  {/* Todos os Professores */}
-  <div className="px-8">
-    <div className="flex justify-between items-center">
-      <h1 className="text-white text-2xl font-bold">Todos os Professores</h1>
-      <div className="flex gap-4">
-        {isLoggedIn && (
-          <>
-            <NovaPublicacaoModal/>
-            <NovoProfessorModal/>
-          </>
-        )}
+      {/* Novos Professores */}
+      <div className="px-8">
+        <h1 className="text-white text-2xl font-bold">Novos Professores</h1>
+        <div className="grid grid-cols-4 gap-6 mt-4">
+          {professorsSorted.slice(0, 4).map((item: Professor) => (
+            <button
+              key={item.id}
+              className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center focus:outline-none hover:opacity-80 transition"
+              onClick={() => pagprofessor(item.id)}
+            >
+              <img
+                src={item.fotoPerfil}
+                alt={`Foto de ${item.nome}`}
+                className="w-24 h-24 rounded-full object-cover"
+              />
+              <h2 className="text-gray-800 text-lg font-bold mt-2">{item.nome}</h2>
+              <p className="text-gray-500">{professorDetails[item.diciplinaID]?.nome}</p>
+            </button>
+          ))}
+        </div>
+        <hr className="my-6 border-gray-600" />
+      </div>
+
+      {/* Todos os Professores */}
+      <div className="px-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-white text-2xl font-bold">Todos os Professores</h1>
+          {isLoggedIn && <NovoProfessorModal />}
+        </div>
+        <div className="grid grid-cols-4 gap-6 mt-4">
+          {paginatedProfessors.map((item: Professor) => (
+            <button
+              key={item.id}
+              className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center focus:outline-none hover:opacity-80 transition"
+              onClick={() => pagprofessor(item.id)}
+            >
+              <img
+                src={item.fotoPerfil}
+                alt={`Foto de ${item.nome}`}
+                className="w-24 h-24 rounded-full object-cover"
+              />
+              <h2 className="text-gray-800 text-lg font-bold mt-2">{item.nome}</h2>
+              <p className="text-gray-500">{professorDetails[item.diciplinaID]?.nome}</p>
+            </button>
+          ))}
+        </div>
+        {/* Navegação */}
+        <div className="flex justify-center gap-4 mt-8">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            className="bg-gray-800 text-white px-4 py-2 rounded-lg shadow-md font-bold hover:bg-gray-700 transition"
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="bg-gray-800 text-white px-4 py-2 rounded-lg shadow-md font-bold hover:bg-gray-700 transition"
+          >
+            Próximo
+          </button>
+        </div>
       </div>
     </div>
-    <div className="grid grid-cols-4 gap-6 mt-4">
-      {professorsSorted.length > 0 ? (
-        professorsSorted.map((item: Professor) => (
-          <button
-            key={item.id}
-            className="bg-white p-4 rounded-xl shadow-md flex flex-col items-center focus:outline-none hover:opacity-80 transition"
-            onClick={() => pagprofessor(item.id)}
-          >
-            <img
-              src={item.fotoPerfil} 
-              alt={`Foto de ${item.nome}`}
-              className="w-24 h-24 rounded-full object-cover"
-            />
-            <h2 className="text-gray-800 text-lg font-bold mt-2">{item.nome}</h2>
-            <p className="text-gray-500">{professorDetails[item.diciplinaID]?.nome}</p>
-          </button>
-        ))
-      ) : (
-        <div className="bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-6">
-          <p className="text-gray-300 text-center">Nenhum professor cadastrado.</p>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
-
   );
 }
