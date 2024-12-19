@@ -9,6 +9,7 @@ export default function Home(){
     const [token, setToken] = useState<string | null>(null);
     const router = useRouter();
     const [userDetails, setUserDetails] = useState<Record<number, any>>({});
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); 
 
     useEffect(() => {
         // Obtém o token do localStorage ao carregar a página
@@ -22,6 +23,12 @@ export default function Home(){
         } else {
             getAvalia();
         }
+        const userID = localStorage.getItem("token");
+      if (userID) {
+        setIsLoggedIn(true);  
+      } else {
+        setIsLoggedIn(false); 
+      }
     }, []);
 
     useEffect(() => {
@@ -219,10 +226,8 @@ export default function Home(){
                     )}
 
                     {/* Verifica se o token existe antes de renderizar o botão */}
-                    {token && (
-                        <div className="mt-6">
-                            <ComentarioModal/>
-                        </div>
+                    {isLoggedIn && (
+                        <ComentarioModal/>
                     )}
                 </div>
             </main>
