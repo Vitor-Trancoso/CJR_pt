@@ -12,6 +12,7 @@ export default function Profile() {
   const [post, getPosts] = useState<any[]>([])
   const [comments, countcomments] = useState<any>([])
 
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedToken = localStorage.getItem("token");
@@ -211,6 +212,32 @@ export default function Profile() {
     router.push('/')
   }
 
+  async function deletaraval(id:number){
+    try{
+      const storedToken = localStorage.getItem("token"); 
+      if (!storedToken) {
+        console.error("Token não encontrado");
+        return;
+      }
+      const resp = await fetch(`http://localhost:3002/avaliacao/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${storedToken}`, 
+          "Content-Type": "application/json",
+        },
+      });
+      if (resp.ok) {
+          alert("avaliação deletada")
+        }
+      else {
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+      }
+    }
+    catch (error) {
+      console.error("Erro ao deletar post: ", error);
+    }
+  }
+
 
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -275,51 +302,53 @@ export default function Profile() {
           <div className="flex flex-col gap-6">
             {post.length > 0 ? (
               <ul>
-                {post.map((post) => (
-                  
-                  <li key={post.id} className="mb-4">
-                    <button
-                      onClick={() => comentarios(post.id)}
-                      className="w-full bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none"
-                    >
-                      <div className="flex items-center gap-2">
-                        <img
-                          src="/images/morty-avatar.png"
-                          alt="Avatar"
-                          className="w-12 h-12 rounded-full"
-                        />
-                        <div>
-                          <p className="text-white font-bold">{user.name}</p>
-                          <p className="text-gray-400 text-sm">
-                            {new Date(post.createdt).toLocaleDateString("pt-BR", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })}
-                            , às{" "}
-                            {new Date(post.createdt).toLocaleTimeString("pt-BR", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                            - {FullUser.curso} - {FullUser.departamento}
-                          </p>
-                        </div>
+              {post.map((post) => (
+                <li key={post.id} className="mb-6">
+                  {/* Botão principal da avaliação */}
+                  <button
+                    onClick={() => comentarios(post.id)}
+                    className="w-full bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <img
+                        src="/images/morty-avatar.png"
+                        alt="Avatar"
+                        className="w-12 h-12 rounded-full"
+                      />
+                      <div>
+                        <p className="text-white font-bold">{user.name}</p>
+                        <p className="text-gray-400 text-sm">
+                          {new Date(post.createdt).toLocaleDateString("pt-BR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })}
+                          , às{" "}
+                          {new Date(post.createdt).toLocaleTimeString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                          - {FullUser.curso} - {FullUser.departamento}
+                        </p>
                       </div>
-                      <p className="text-gray-300 mt-4 text-left">{post.conteudo}</p>
-                      <div className="flex justify-between items-center mt-4">
-                        <div className="flex gap-2">
-                          <div className="text-green-500 hover:text-green-600 cursor-pointer">
-                            <i className="fas fa-edit"></i>
-                          </div>
-                          <div className="text-red-500 hover:text-red-600 cursor-pointer">
-                            <i className="fas fa-trash"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                    </div>
+                    <p className="text-gray-300 mt-4 text-left">{post.conteudo}</p>
+                  </button>
+            
+                  {/* Botão de deletar */}
+                  {token && (
+                    <div className="flex justify-end mt-2">
+                      <button
+                        className="text-red-500 hover:text-red-600 cursor-pointer px-4 py-2 bg-gray-800 rounded-lg shadow-md focus:outline-none"
+                        onClick={()=> deletaraval(post.id)}
+                      >
+                        <i className="fas fa-trash"></i> Deletar
+                      </button>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
             ) : (
               <div className="bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-6">
                 <p className="text-gray-300 text-center">
