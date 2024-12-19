@@ -6,13 +6,13 @@ import ComentarioModal from "../components/CommentModal";
 export default function Home(){
     const [aval, getAval] = useState<any>([]);
     const [user, getUser] = useState<any>([]);
+    const [userme, getUserme] = useState<any>([]);
     const [token, setToken] = useState<string | null>(null);
     const router = useRouter();
     const [userDetails, setUserDetails] = useState<Record<number, any>>({});
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); 
 
     useEffect(() => {
-        // Obtém o token do localStorage ao carregar a página
         const storedToken = localStorage.getItem("authToken");
         setToken(storedToken);
 
@@ -22,6 +22,7 @@ export default function Home(){
             getAval([]);
         } else {
             getAvalia();
+            getme()
         }
         const userID = localStorage.getItem("token");
       if (userID) {
@@ -118,6 +119,68 @@ export default function Home(){
     function perfil() {
         router.push('/perfil_logado');
     }
+
+    async function deletecomment(id: number){
+        try{
+            const storedToken = localStorage.getItem("token"); 
+            if (!storedToken) {
+              console.error("Token não encontrado");
+              return;
+            }
+            const resp = await fetch(`http://localhost:3002/comments/${id}`, {
+              method: "DELETE",
+              headers: {
+                "Authorization": `Bearer ${storedToken}`, 
+                "Content-Type": "application/json",
+              },
+            });
+            if (resp.ok) {
+                alert("comentário deletado")
+              }
+            else {
+              console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+            }
+          }
+          catch (error) {
+            console.error("Erro ao deletar post: ", error);
+          }
+    }
+    
+    async function getme(){
+        try {
+            const storedToken = localStorage.getItem("token"); 
+            if (!storedToken) {
+              console.log("Token não encontrado");
+              getUserme([]);
+              return;
+            }
+        
+            const resp = await fetch("http://localhost:3002/me", {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${storedToken}`, 
+                "Content-Type": "application/json",
+              },
+            });
+        
+            if (resp.ok) {
+              const text = await resp.text();
+              if (text) {
+                const data = JSON.parse(text);
+                getUserme(data);
+              } else {
+                console.error("Resposta vazia");
+                getUserme([]);
+              }
+            } else {
+              console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+              getUserme([]);
+            }
+          } catch (error) {
+            console.error("Erro ao buscar usuário: ", error);
+            getUserme([]);
+          }
+        }
 
     return (
         <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
@@ -219,6 +282,16 @@ export default function Home(){
                                     </div>
                                 </div>
                                 <p className="text-gray-300 mt-4">{comentario.conteudo}</p>
+
+                                {/* Verifica se o usuário logado é o autor do comentário */}
+                                {userme.id === comentario.userID && (
+                                    <button
+                                        className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                                        onClick={() => deletecomment(comentario.id)}
+                                    >
+                                        Deletar
+                                    </button>
+                                )}
                             </div>
                         ))
                     ) : (
