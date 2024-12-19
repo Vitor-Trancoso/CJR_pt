@@ -8,6 +8,8 @@ export default function Profile() {
   const router = useRouter();
   const [FullUser, getFullUser] = useState<any>([]);
   const [post, getPosts] = useState<any[]>([]);
+  const [professor, getprofessor] = useState<any>([]);
+  const [professorDetails, setprofessorDetails] = useState<Record<number, any>>({});
 
 
   useEffect(() => {
@@ -110,6 +112,75 @@ export default function Profile() {
     router.push("/comentarios");
 }   
 
+useEffect(() => {
+  async function getprof() {
+    try {
+      const resp = await fetch("http://localhost:3002/professor", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        const text = await resp.text();
+        if (text) {
+          const data = JSON.parse(text);
+          getprofessor(data);
+        } else {
+          console.error("Resposta vazia");
+          getprofessor([]);
+        }
+      } else {
+        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+        getprofessor([]);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar usuários: ", error);
+      getprofessor([]);
+    }
+  }
+  getprof();
+}, []);
+
+const professorsSorted = [...professor].sort((a, b) => b.id - a.id);
+
+async function getdisciplina(id: number) {
+try {
+  const resp = await fetch(`http://localhost:3002/diciplina/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (resp.ok) {
+    const text = await resp.text();
+    if (text) {
+      const data = JSON.parse(text);
+      setprofessorDetails((prevDetails) => ({
+        ...prevDetails,
+        [id]: data,
+      }));
+    } else {
+      console.error("Resposta vazia");
+    }
+  } else {
+    console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+  }
+} catch (error) {
+  console.error("Erro ao buscar disciplinas: ", error);
+}
+}
+
+useEffect(() => {
+professorsSorted.forEach((professor) => {
+  if (!professorDetails[professor.diciplinaID]) {
+    getdisciplina(professor.diciplinaID);
+  }
+});
+}, [professorsSorted]);
+
   return (
     <div className="w-full h-screen bg-gradient-to-br animate-gradient flex flex-col">
       {/* Header */}
@@ -162,13 +233,23 @@ export default function Profile() {
           <div className="flex flex-col gap-6">
             {post.length > 0 ? (
               <ul>
-                {post.map((post) => (
-                  <li key={post.id} className="mb-4">
+              {post.map((post) => {
+                const professorAssociado = professorsSorted.find(
+                  (prof) => prof.id === post.professorID
+                );
+            
+                const disciplina = professorAssociado
+                  ? professorDetails[professorAssociado.diciplinaID]
+                  : null;
+            
+                return (
+                  <li key={post.id} className="mb-6">
+                    {/* Botão principal da avaliação */}
                     <button
-                      className="w-full bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none"
                       onClick={() => comentarios(post.id)}
+                      className="w-full bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none"
                     >
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <img
                           src="/images/morty-avatar.png"
                           alt="Avatar"
@@ -187,15 +268,22 @@ export default function Profile() {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
-                            - {FullUser.curso} - {FullUser.departamento}
+                            - {FullUser.curso} - {FullUser.departamento}{"    "}
+                            {"Prof."}{professorAssociado && (
+                              <> {professorAssociado.nome}</>
+                            )}
+                            {disciplina && (
+                              <> - {disciplina.nome}</>
+                            )}
                           </p>
                         </div>
                       </div>
                       <p className="text-gray-300 mt-4 text-left">{post.conteudo}</p>
                     </button>
                   </li>
-                ))}
-              </ul>
+                );
+              })}
+            </ul>
             ) : (
               <div className="bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-6">
                 <p className="text-gray-300 text-center">
