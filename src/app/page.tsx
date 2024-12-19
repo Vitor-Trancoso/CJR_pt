@@ -9,7 +9,7 @@ export default function Professores() {
   const Router = useRouter();
   const [professor, getprofessor] = useState<any>([]);
   const [professorDetails, setprofessorDetails] = useState<Record<number, any>>({});
-  const [currentPage, setCurrentPage] = useState(0); // Página atual para navegação dos professores
+  const [currentPage, setCurrentPage] = useState(0); 
 
   const imagensPerfil = [
     '/images/Katniss.jpg',

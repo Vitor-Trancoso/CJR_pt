@@ -1,19 +1,38 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import NovaPublicacaoModal from "../components/NewPublicationModal";
 
 export default function PerfilLogadoProfessor() {
   const [professor, setProfessor] = useState<any>([]);
   const [disciplina, setDisciplina] = useState<any>({});
   const [aval, setAval] = useState<{ avaliacoes: any[] }>({ avaliacoes: [] });
   const [userDetails, setUserDetails] = useState<Record<number, any>>({});
+  const [proffoto, setProffoto] = useState<string | null>(null); 
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); 
+
   const router = useRouter();
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const photo = localStorage.getItem("proffoto");
+      setProffoto(photo);
+      const userID = localStorage.getItem("token");
+      if (userID) {
+        setIsLoggedIn(true);  
+      } else {
+        setIsLoggedIn(false); 
+      }
+    }
+  }, []);
 
-  const proffoto = localStorage.getItem("proffoto");
+  function feed() {
+    router.push('/');
+  }
 
-  function feed(){
-    router.push('/')
+  function perfil(id: number){
+    localStorage.setItem('userID', id.toString());  
+    router.push('/ver_perfil');
   }
 
   useEffect(() => {
@@ -86,7 +105,6 @@ export default function PerfilLogadoProfessor() {
       const resp = await fetch(`http://localhost:3002/professor/avals/${profId}`);
       if (resp.ok) {
         const data = await resp.json();
-        console.log(data)
         setAval(data);
       } else {
         console.error(`Erro ao buscar avaliações: ${resp.status}`);
@@ -99,7 +117,7 @@ export default function PerfilLogadoProfessor() {
   return (
     <div className="w-full h-screen bg-gradient-to-br from-[#004aad] to-[#cb6ce6] flex flex-col">
       <header className="w-full bg-gray-800 px-8 py-4 flex justify-between items-center shadow-md">
-      <button
+        <button
           className="w-35 h-12 p-0 bg-transparent border-none focus:outline-none hover:opacity-80 transition"
           onClick={feed}
         >
@@ -109,13 +127,12 @@ export default function PerfilLogadoProfessor() {
             className="w-full h-full"
           />
         </button>
-        
       </header>
       <main className="flex flex-col items-center mt-6">
         <div className="bg-white w-11/12 max-w-4xl rounded-lg shadow-lg p-6">
           <div className="flex items-center gap-4">
             <img
-              src= {proffoto!}
+              src={proffoto!}
               alt="Avatar do Professor"
               className="w-24 h-24 rounded-full border-4 border-gray-300 shadow-md"
             />
@@ -130,7 +147,11 @@ export default function PerfilLogadoProfessor() {
           <h2 className="text-xl font-bold text-gray-800 mb-4">Avaliações</h2>
           {aval.avaliacoes.length > 0 ? (
             aval.avaliacoes.map((avaliacao, index) => (
-              <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-md mb-4">
+              <button
+                key={index}
+                className="bg-gray-800 w-full p-4 rounded-lg shadow-md mb-4 text-left"
+                onClick={() => perfil(userDetails[avaliacao.usuarioID]?.id)}
+              >
                 <div className="flex items-center gap-4">
                   <img
                     src="/images/morty-avatar.png"
@@ -146,10 +167,13 @@ export default function PerfilLogadoProfessor() {
                   </div>
                 </div>
                 <p className="text-gray-300 mt-4">{avaliacao.conteudo}</p>
-              </div>
+              </button>
             ))
           ) : (
             <p className="text-gray-400">Nenhuma avaliação ainda.</p>
+          )}
+          {isLoggedIn && (
+            <NovaPublicacaoModal/>
           )}
         </div>
       </main>

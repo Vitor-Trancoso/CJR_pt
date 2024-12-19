@@ -46,12 +46,7 @@ export default function ComentarioModal() {
 
   async function getAvaliacao(){
     try {
-      const storedToken = localStorage.getItem("token"); 
-      if (!storedToken) {
-        console.error("Token não encontrado");
-        getAval([]);
-        return;
-      }
+
       const avalId = localStorage.getItem("avalID");
       if (!avalId) {
           console.error("AvalId não encontrado");
@@ -62,7 +57,6 @@ export default function ComentarioModal() {
       const resp = await fetch(`http://localhost:3002/avaliacao/comments/${avalId}`, {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${storedToken}`, 
           "Content-Type": "application/json",
         },
       });
