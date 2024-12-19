@@ -282,8 +282,6 @@ export default function Home(){
                                     </div>
                                 </div>
                                 <p className="text-gray-300 mt-4">{comentario.conteudo}</p>
-
-                                {/* Verifica se o usuário logado é o autor do comentário */}
                                 {userme.id === comentario.userID && (
                                     <button
                                         className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"

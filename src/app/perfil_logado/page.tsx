@@ -10,8 +10,8 @@ export default function Profile() {
   const [user, getUser] = useState<any>([]);
   const [FullUser, getFullUser] = useState<any>([])
   const [post, getPosts] = useState<any[]>([])
-  const [comments, countcomments] = useState<any>([])
-
+  const [professor, getprofessor] = useState<any>([]);
+  const [professorDetails, setprofessorDetails] = useState<Record<number, any>>({});
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -173,35 +173,6 @@ export default function Profile() {
     }
   }
 
-  async function countComments(postId: number){
-    try{
-      const storedToken = localStorage.getItem("token"); 
-      if (!storedToken) {
-        console.error("Token não encontrado");
-        getUser([]);
-        return;
-      }
-      const resp = await fetch(`http://localhost:3002/avaliacao/countcomments/${postId}`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${storedToken}`, 
-          "Content-Type": "application/json",
-        },
-      });
-      if (resp.ok) {
-          const text = await resp.text();
-          const data = JSON.parse(text);
-          console.log("Dados da API:", data);
-          countcomments(data)
-        }
-      else {
-        console.error(`Erro: ${resp.status} - ${resp.statusText}`);
-      }
-    }
-    catch (error) {
-      console.error("Erro ao buscar posts: ", error);
-    }
-  }
 
   function logout() {
     localStorage.removeItem("token");
@@ -237,6 +208,74 @@ export default function Profile() {
       console.error("Erro ao deletar post: ", error);
     }
   }
+  useEffect(() => {
+    async function getprof() {
+      try {
+        const resp = await fetch("http://localhost:3002/professor", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (resp.ok) {
+          const text = await resp.text();
+          if (text) {
+            const data = JSON.parse(text);
+            getprofessor(data);
+          } else {
+            console.error("Resposta vazia");
+            getprofessor([]);
+          }
+        } else {
+          console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+          getprofessor([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar usuários: ", error);
+        getprofessor([]);
+      }
+    }
+    getprof();
+  }, []);
+
+const professorsSorted = [...professor].sort((a, b) => b.id - a.id);
+
+async function getdisciplina(id: number) {
+  try {
+    const resp = await fetch(`http://localhost:3002/diciplina/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (resp.ok) {
+      const text = await resp.text();
+      if (text) {
+        const data = JSON.parse(text);
+        setprofessorDetails((prevDetails) => ({
+          ...prevDetails,
+          [id]: data,
+        }));
+      } else {
+        console.error("Resposta vazia");
+      }
+    } else {
+      console.error(`Erro: ${resp.status} - ${resp.statusText}`);
+    }
+  } catch (error) {
+    console.error("Erro ao buscar disciplinas: ", error);
+  }
+}
+
+useEffect(() => {
+  professorsSorted.forEach((professor) => {
+    if (!professorDetails[professor.diciplinaID]) {
+      getdisciplina(professor.diciplinaID);
+    }
+  });
+}, [professorsSorted]);
 
 
   return (
@@ -302,52 +341,68 @@ export default function Profile() {
           <div className="flex flex-col gap-6">
             {post.length > 0 ? (
               <ul>
-              {post.map((post) => (
-                <li key={post.id} className="mb-6">
-                  {/* Botão principal da avaliação */}
-                  <button
-                    onClick={() => comentarios(post.id)}
-                    className="w-full bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none"
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="/images/morty-avatar.png"
-                        alt="Avatar"
-                        className="w-12 h-12 rounded-full"
-                      />
-                      <div>
-                        <p className="text-white font-bold">{user.name}</p>
-                        <p className="text-gray-400 text-sm">
-                          {new Date(post.createdt).toLocaleDateString("pt-BR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          })}
-                          , às{" "}
-                          {new Date(post.createdt).toLocaleTimeString("pt-BR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                          - {FullUser.curso} - {FullUser.departamento}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-gray-300 mt-4 text-left">{post.conteudo}</p>
-                  </button>
+              {post.map((post) => {
+                const professorAssociado = professorsSorted.find(
+                  (prof) => prof.id === post.professorID
+                );
             
-                  {/* Botão de deletar */}
-                  {token && (
-                    <div className="flex justify-end mt-2">
-                      <button
-                        className="text-red-500 hover:text-red-600 cursor-pointer px-4 py-2 bg-gray-800 rounded-lg shadow-md focus:outline-none"
-                        onClick={()=> deletaraval(post.id)}
-                      >
-                        <i className="fas fa-trash"></i> Deletar
-                      </button>
-                    </div>
-                  )}
-                </li>
-              ))}
+                const disciplina = professorAssociado
+                  ? professorDetails[professorAssociado.diciplinaID]
+                  : null;
+            
+                return (
+                  <li key={post.id} className="mb-6">
+                    {/* Botão principal da avaliação */}
+                    <button
+                      onClick={() => comentarios(post.id)}
+                      className="w-full bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none"
+                    >
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/images/morty-avatar.png"
+                          alt="Avatar"
+                          className="w-12 h-12 rounded-full"
+                        />
+                        <div>
+                          <p className="text-white font-bold">{user.name}</p>
+                          <p className="text-gray-400 text-sm">
+                            {new Date(post.createdt).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                            , às{" "}
+                            {new Date(post.createdt).toLocaleTimeString("pt-BR", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                            - {FullUser.curso} - {FullUser.departamento}{"    "}
+                            {"Prof."}{professorAssociado && (
+                              <> {professorAssociado.nome}</>
+                            )}
+                            {disciplina && (
+                              <> - {disciplina.nome}</>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-gray-300 mt-4 text-left">{post.conteudo}</p>
+                    </button>
+            
+                    {/* Botão de deletar */}
+                    {token && (
+                      <div className="flex justify-end mt-2">
+                        <button
+                          className="text-red-500 hover:text-red-600 cursor-pointer px-4 py-2 bg-gray-800 rounded-lg shadow-md focus:outline-none"
+                          onClick={() => deletaraval(post.id)}
+                        >
+                          <i className="fas fa-trash"></i> Deletar
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
             ) : (
               <div className="bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-6">
