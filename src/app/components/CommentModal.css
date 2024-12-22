@@ -1,8 +1,8 @@
 #AparenciaDoModal {
     width: fit-content;
     position: fixed;
-    top: 15%;
-    left: 20%;
+    top: 15mvh;
+    left: 20mvw;
     padding: 18rem 5 rem;
     background: linear-gradient(
     270deg,
@@ -78,11 +78,11 @@
 
 #Publicacao {
     width: 46rem;
-    height: 22rem;
-    margin: 0.15rem 2rem 1rem 2rem;
+    height: 25rem;
+    margin: 2rem 2rem 1rem 2rem;
     background-color: rgba(255, 255, 255, 0.5);
     border: 0;
-    border-radius: 0px 0px 15px 15px;
+    border-radius: 15px 15px 15px 15px;
     padding: 1rem 1rem;
 }
 
@@ -99,6 +99,10 @@
     font-size: 1.1rem;
 }
 
+#BotaoCancelar:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
 #BotaoComentar {
     width: fit-content;
     padding: 0.5rem 1.2rem;
@@ -109,4 +113,8 @@
     color: #3d0b72;
     background-color: rgba(255, 255, 255, 0.5);
     font-weight: bold;
+}
+
+#BotaoComentar:hover {
+    filter: brightness(0.9);
 }

@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import NovaPublicacaoModal from './components/NewPublicationModal';
 import NovoProfessorModal from './components/CriarProf';
 
 export default function Professores() {
@@ -169,7 +168,7 @@ export default function Professores() {
 
       {/* Novos Professores */}
       <div className="px-8">
-        <h1 className="text-white text-2xl font-bold">Novos Professores</h1>
+        <h1 className="text-white text-2xl mt-8 font-bold">Novos Professores</h1>
         <div className="grid grid-cols-4 gap-6 mt-4">
           {professorsSorted.slice(0, 4).map((item: Professor) => (
             <button

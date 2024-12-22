@@ -170,16 +170,6 @@ export default function ComentarioModal() {
             <form id="ElementosModal" /*className="space-y-4 mt-6"*/>
               
               <div>
-                {/* Botões da Publicação*/}
-              <div id='Botoes'>
-                <button id='Negrito'>B</button>
-                <button id='Italico'>I</button>
-                <button id='H'>H</button>
-                <button id='Link'>L</button>
-                <button id='Imagem'>F</button>
-                <button id='Sobre'>?</button>
-             </div>
-
                 {/* Publicação*/}
                 <div>
                   <textarea 

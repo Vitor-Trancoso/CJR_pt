@@ -1,8 +1,8 @@
 #AparenciaDoModal {
     width: fit-content;
     position: fixed;
-    top: 15%;
-    left: 20%;
+    top: 15mvh;
+    left: 20mvw;
     padding: 18rem 5 rem;
     background: linear-gradient(
     270deg,
@@ -12,6 +12,10 @@
     rgb(2, 67, 152)
   );
     border-radius: 15px;
+
+    animation-name: example;
+    animation-duration: 4s;
+    animation-delay: 2s;
 }
 #ElementosModal {
     display: flex;
@@ -34,75 +38,13 @@
     padding: 0rem 1rem;
 }
   
-#Botoes {
-    position: relative;
-    width: fit-content;
-    margin: 0rem 2rem 0rem 2rem;
-    background-color: rgba(255, 255, 255, 0.5); 
-    padding: 0rem 37rem 0rem 0rem;
-    border-radius: 15px 15px 0px 0px;
-}
-  
-#Negrito {
-    width: 1.5rem;
-    position: relative;
-    left: 10%;
-    padding: 0;
-    background-color: rgba(240, 248, 255, 0) ;
-    margin: 0;
-}
-  
-#Italico {
-    width: 1.5rem;
-    position: relative;
-    left: 12%;
-    padding: 0;
-    background-color: rgba(240, 248, 255, 0) ;
-    margin: 0;
-}
-  
-#H {
-    width: 1.5rem;
-    position: relative;
-    left: 14%;
-    padding: 0;
-    background-color: rgba(240, 248, 255, 0) ;
-    margin: 0;
-}
-  
-#Link {
-    width: 1.5rem;
-    position: relative;
-    left: 16%;
-    padding: 0;
-    background-color: rgba(240, 248, 255, 0) ;
-    margin: 0;
-}
-  
-#Imagem {
-    width: 1.5rem;
-    position: relative;
-    left: 18%;
-    padding: 0;
-    background-color: rgba(240, 248, 255, 0) ;
-    margin: 0;
-}
-  
-#Sobre {
-    width: 1.5rem;
-    position: relative;
-    left: 20%;
-    padding: 0;
-    background-color: rgba(240, 248, 255, 0) ;
-    margin: 0;
-}
 #Publicacao {
     width: 46rem;
-    height: 16rem;
-    margin: 0.15rem 2rem 1rem 2rem;
+    height: 25rem;
+    margin: 2rem 2rem 1rem 2rem;
     background-color: rgba(255, 255, 255, 0.5);
     border: 0;
-    border-radius: 0px 0px 15px 15px;
+    border-radius: 15px 15px 15px 15px;
     padding: 1rem 1rem;
 }
 #BotaoCancelar {
@@ -117,6 +59,9 @@
     font-weight: bold;
     font-size: 1.1rem;
 }
+#BotaoCancelar:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
 #BotaoAvaliar {
     width: fit-content;
     padding: 0.5rem 1.2rem;
@@ -127,4 +72,7 @@
     color: #3d0b72;
     background-color: rgba(255, 255, 255, 0.5);
     font-weight: bold;
+}
+#BotaoAvaliar:hover {
+    filter: brightness(0.9);
 }
